@@ -16,6 +16,9 @@ RUN apk -U --no-cache add \
     nodejs \
     npm &&\
     rm -rf /var/cache/apk/*
+    
+# AWS CDK, AWS SDK, and Matt's CDK SSO Plugin https://www.npmjs.com/package/cdk-cross-account-plugin
+RUN npm i -g aws-cdk@${CDK_VERSION}
 
 # Set default run command
 CMD ["/bin/bash"]
