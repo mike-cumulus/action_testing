@@ -28,30 +28,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1.12.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Log in to the Container registry
+#         uses: docker/login-action@v1.12.0
+#         with:
+#           registry: ${{ env.REGISTRY }}
+#           username: ${{ github.actor }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3.6.2
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+#       - name: Extract metadata (tags, labels) for Docker
+#         id: meta
+#         uses: docker/metadata-action@v3.6.2
+#         with:
+#           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2.9.0
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v2.9.0
+#         with:
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Get latest Github release
+        uses: rez0n/actions-github-release@v1.7
+        id: cdk_release
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: "aws/aws-cdk"
+          type: "latest"
+
 
       # Runs a single command using the runners shell
-      - name: Debug Output 1
-        run: echo Hello, world!
+      - name: CDK Version
+        env: 
+          VER: ${{ steps.node_release.outputs.release }}
+        run: echo Latest CDK Version $VER
 
       # Runs a set of commands using the runners shell
       - name: Multi-Line Debug Output
