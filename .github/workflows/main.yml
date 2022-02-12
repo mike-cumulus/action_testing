@@ -61,7 +61,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: CDK Version
         env: 
-          VER: ${{ steps.node_release.outputs.release }}
+          VER: ${{ steps.cdk_release.outputs.release }}
         run: echo Latest CDK Version $VER
 
       # Runs a set of commands using the runners shell
