@@ -28,27 +28,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-#       - name: Log in to the Container registry
-#         uses: docker/login-action@v1.12.0
-#         with:
-#           registry: ${{ env.REGISTRY }}
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GITHUB_TOKEN }}
-
-#       - name: Extract metadata (tags, labels) for Docker
-#         id: meta
-#         uses: docker/metadata-action@v3.6.2
-#         with:
-#           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-#       - name: Build and push Docker image
-#         uses: docker/build-push-action@v2.9.0
-#         with:
-#           context: .
-#           push: true
-#           tags: ${{ steps.meta.outputs.tags }}
-#           labels: ${{ steps.meta.outputs.labels }}
-
       - name: Latest Github Release Tag
         uses: rez0n/actions-github-release@v1.7
         id: cdk_release
@@ -64,9 +43,33 @@ jobs:
           ver=$(echo ${{steps.cdk_release.outputs.release}} | cut -dv -f2)
           echo "::set-output name=cdkver::$ver"
 
-      # Runs a single command using the runners shell
+      # Debug output the CDK version
       - name: CDK Version From Tag
         env: 
           VER: ${{ steps.get-ver.outputs.cdkver }}
         run: echo Latest CDK Version $VER
+
+      #Start Docker Build
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1.12.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3.6.2
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}, ${{ steps.get-ver.outputs.cdkver }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: CDK_VERSION=${{ steps.get-ver.outputs.cdkver }}
+
 
