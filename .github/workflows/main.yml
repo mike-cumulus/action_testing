@@ -49,7 +49,7 @@ jobs:
 #           tags: ${{ steps.meta.outputs.tags }}
 #           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Get latest Github release
+      - name: Latest Github Release Tag
         uses: rez0n/actions-github-release@v1.7
         id: cdk_release
         env:
@@ -57,15 +57,16 @@ jobs:
           repository: "aws/aws-cdk"
           type: "latest"
 
+      # Remove the v from version tag
+      - name: CDK Version From Tag
+        id: get-ver
+        run: |
+          ver=$(echo ${{steps.cdk_release.outputs.release}} | cut -dv -f2)
+          echo "::set-output name=cdkver::$ver"
 
       # Runs a single command using the runners shell
-      - name: CDK Version
+      - name: CDK Version From Tag
         env: 
-          VER: ${{ steps.cdk_release.outputs.release }}
+          VER: ${{ steps.get-ver.outputs.cdkver }}
         run: echo Latest CDK Version $VER
 
-      # Runs a set of commands using the runners shell
-      - name: Multi-Line Debug Output
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
