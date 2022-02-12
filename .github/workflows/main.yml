@@ -63,6 +63,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=${{steps.get-ver.outputs.cdkver}}
             type=raw,value=${{steps.cdk_release.outputs.release}}
             type=raw,value=latest
 
